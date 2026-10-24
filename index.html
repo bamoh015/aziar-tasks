@@ -1001,223 +1001,329 @@ body.authenticated > .layout {
 </div>
 
 
-  <script>
-    "use strict";
+ 
+<script>
+"use strict";
 
-    const STORAGE_KEY = "aziar_tasks_demo_v1";
+const labels = {
+  new: "جديدة",
+  in_progress: "قيد الإنجاز",
+  completed: "مكتملة",
+  cancelled: "ملغاة"
+};
 
-    const labels = {
-      new: "جديدة",
-      in_progress: "قيد الإنجاز",
-      completed: "مكتملة",
-      cancelled: "ملغاة"
+const priorityLabels = {
+  low: "منخفضة",
+  normal: "عادية",
+  high: "مهمة",
+  urgent: "مستعجلة"
+};
+
+const $ = id => document.getElementById(id);
+
+function localDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+const today = localDateString();
+
+$("todayLabel").textContent = new Intl.DateTimeFormat("ar-MA", {
+  year: "numeric",
+  month: "long",
+  day: "numeric"
+}).format(new Date());
+
+let tasks = [];
+let currentUserProfile = null;
+let employees = [];
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function isLate(task) {
+  return Boolean(
+    task.dueDate &&
+    task.dueDate < today &&
+    !["completed", "cancelled"].includes(task.status)
+  );
+}
+
+function render() {
+  const query = $("searchInput").value.trim().toLocaleLowerCase("ar");
+  const selectedStatus = $("statusFilter").value;
+
+  const filtered = tasks.filter(task => {
+    const searchable = [
+      task.title,
+      task.description,
+      task.department,
+      task.employeeName
+    ].join(" ").toLocaleLowerCase("ar");
+
+    return searchable.includes(query) &&
+      (!selectedStatus || task.status === selectedStatus);
+  });
+
+  $("totalCount").textContent = tasks.length;
+  $("progressCount").textContent =
+    tasks.filter(task => task.status === "in_progress").length;
+  $("doneCount").textContent =
+    tasks.filter(task => task.status === "completed").length;
+  $("lateCount").textContent = tasks.filter(isLate).length;
+
+  if (!filtered.length) {
+    $("tasksBody").innerHTML = `
+      <tr>
+        <td class="empty" colspan="5">
+          <span class="empty-icon">▤</span>
+          ما كايناش مهام مسجلة حالياً.
+        </td>
+      </tr>`;
+    return;
+  }
+
+  $("tasksBody").innerHTML = filtered.map(task => {
+    const statusClass = {
+      new: "tag-new",
+      in_progress: "tag-progress",
+      completed: "tag-done",
+      cancelled: "tag-cancelled"
+    }[task.status] || "tag-new";
+
+    return `
+      <tr>
+        <td><span class="task-title">${escapeHTML(task.title)}</span></td>
+        <td>${escapeHTML(task.department || "—")}</td>
+        <td>
+          ${escapeHTML(task.dueDate || "—")}
+          ${isLate(task) ? '<span class="tag tag-late">متأخرة</span>' : ""}
+        </td>
+        <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
+        <td><span class="tag ${statusClass}">${escapeHTML(labels[task.status] || "جديدة")}</span></td>
+      </tr>`;
+  }).join("");
+}
+
+async function loadEmployees() {
+  const select = $("assignedTo");
+  select.innerHTML = '<option value="">جاري تحميل الموظفين...</option>';
+
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, department")
+    .eq("role", "employee")
+    .eq("is_active", true)
+    .order("full_name");
+
+  if (error) {
+    console.error("خطأ تحميل الموظفين:", error);
+    select.innerHTML = '<option value="">تعذر تحميل الموظفين</option>';
+    throw error;
+  }
+
+  employees = data || [];
+
+  if (!employees.length) {
+    select.innerHTML = '<option value="">لا يوجد موظفون مفعّلون</option>';
+    return;
+  }
+
+  select.innerHTML =
+    '<option value="">اختر الموظف المكلف</option>' +
+    employees.map(employee => `
+      <option value="${escapeHTML(employee.id)}">
+        ${escapeHTML(employee.full_name || "موظف بدون اسم")}
+      </option>
+    `).join("");
+}
+
+async function loadTasks() {
+  const { data, error } = await supabaseClient
+    .from("tasks")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("خطأ تحميل المهام:", error);
+    alert("تعذر تحميل المهام من قاعدة البيانات. تحقق من الاتصال والصلاحيات.");
+    throw error;
+  }
+
+  tasks = (data || []).map(task => {
+    const employee = employees.find(item => item.id === task.assigned_to);
+
+    return {
+      id: task.id,
+      title: task.title,
+      description: task.description || "",
+      department: task.department || "",
+      dueDate: task.due_date || "",
+      startDate: task.start_date || "",
+      priority: task.priority || "normal",
+      status: task.status || "new",
+      assignedTo: task.assigned_to,
+      employeeName: employee?.full_name || "",
+      createdAt: task.created_at
     };
+  });
 
-    const priorityLabels = {
-      low: "منخفضة",
-      normal: "عادية",
-      high: "مهمة",
-      urgent: "مستعجلة"
-    };
+  render();
+}
 
-    const $ = id => document.getElementById(id);
+window.activateTaskDashboard = async function(profile) {
+  currentUserProfile = profile;
 
-    function localDateString(date = new Date()) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
+  $("openModal").style.display =
+    profile.role === "director" ? "" : "none";
+
+  try {
+    if (profile.role === "director") {
+      await loadEmployees();
+    } else {
+      $("assignedTo").innerHTML = "";
     }
 
-    const today = localDateString();
+    await loadTasks();
+  } catch (error) {
+    console.error("تعذر تهيئة لوحة المهام:", error);
+  }
+};
 
-    $("todayLabel").textContent = new Intl.DateTimeFormat("ar-MA", {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    }).format(new Date());
+function openModal() {
+  if (!currentUserProfile || currentUserProfile.role !== "director") {
+    alert("إضافة المهام متاحة للمدير فقط.");
+    return;
+  }
 
-    let tasks = [];
+  $("taskModal").classList.add("open");
+  $("title").focus();
+}
 
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const parsed = stored ? JSON.parse(stored) : [];
-      tasks = Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      console.error("تعذر قراءة بيانات التجربة:", error);
-      tasks = [];
+function closeModal() {
+  $("taskModal").classList.remove("open");
+}
+
+$("openModal").addEventListener("click", openModal);
+$("closeModal").addEventListener("click", closeModal);
+
+$("taskModal").addEventListener("click", event => {
+  if (event.target === $("taskModal")) closeModal();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeModal();
+});
+
+$("searchInput").addEventListener("input", render);
+$("statusFilter").addEventListener("change", render);
+
+$("taskForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!currentUserProfile || currentUserProfile.role !== "director") {
+    alert("إضافة المهام متاحة للمدير فقط.");
+    return;
+  }
+
+  const title = $("title").value.trim();
+  const department = $("department").value.trim();
+  const assignedTo = $("assignedTo").value;
+  const startDate = $("startDate").value || null;
+  const dueDate = $("dueDate").value || null;
+  const priority = $("priority").value;
+  const description = $("description").value.trim();
+
+  if (!title || !department || !assignedTo) {
+    alert("عافاك عمر عنوان المهمة والمصلحة واختار الموظف.");
+    return;
+  }
+
+  if (startDate && dueDate && dueDate < startDate) {
+    alert("الأجل النهائي خاصو يكون من بعد تاريخ البداية أو نفس النهار.");
+    return;
+  }
+
+  if (dueDate && dueDate < today) {
+    if (!confirm("الأجل المدخل سابق لتاريخ اليوم. واش بغيتي تكمل؟")) {
+      return;
     }
+  }
 
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
-    }
+  const submitButton = $("taskForm").querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = "جاري الحفظ...";
 
-    function isLate(task) {
-      return Boolean(
-        task.dueDate &&
-        task.dueDate < today &&
-        !["completed", "cancelled"].includes(task.status)
-      );
-    }
-
-    function render() {
-      const query = $("searchInput").value.trim().toLocaleLowerCase("ar");
-      const selectedStatus = $("statusFilter").value;
-
-      const filtered = tasks.filter(task => {
-        const searchable = [
-          task.title,
-          task.description,
-          task.department
-        ].join(" ").toLocaleLowerCase("ar");
-
-        return searchable.includes(query) &&
-          (!selectedStatus || task.status === selectedStatus);
-      });
-
-      $("totalCount").textContent = tasks.length;
-      $("progressCount").textContent =
-        tasks.filter(task => task.status === "in_progress").length;
-      $("doneCount").textContent =
-        tasks.filter(task => task.status === "completed").length;
-      $("lateCount").textContent = tasks.filter(isLate).length;
-
-      if (!filtered.length) {
-        $("tasksBody").innerHTML = `
-          <tr>
-            <td class="empty" colspan="5">
-              <span class="empty-icon">▤</span>
-              ما كايناش مهام لعرضها حالياً.<br>
-              استعمل زر «إضافة مهمة جديدة» لتجربة الواجهة.
-            </td>
-          </tr>`;
-        return;
-      }
-
-      $("tasksBody").innerHTML = filtered.map(task => {
-        const statusClass = {
-          new: "tag-new",
-          in_progress: "tag-progress",
-          completed: "tag-done",
-          cancelled: "tag-cancelled"
-        }[task.status] || "tag-new";
-
-        return `
-          <tr>
-            <td><span class="task-title">${escapeHTML(task.title)}</span></td>
-            <td>${escapeHTML(task.department || "—")}</td>
-            <td>
-              ${escapeHTML(task.dueDate || "—")}
-              ${isLate(task) ? '<span class="tag tag-late">متأخرة</span>' : ""}
-            </td>
-            <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
-            <td><span class="tag ${statusClass}">${escapeHTML(labels[task.status] || "جديدة")}</span></td>
-          </tr>`;
-      }).join("");
-    }
-
-    function save() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-        render();
-      } catch (error) {
-        alert("تعذر حفظ البيانات في هذا المتصفح. تحقق من المساحة المتاحة وإعدادات المتصفح.");
-        console.error(error);
-      }
-    }
-
-    function openModal() {
-      $("taskModal").classList.add("open");
-      $("title").focus();
-    }
-
-    function closeModal() {
-      $("taskModal").classList.remove("open");
-    }
-
-    $("openModal").addEventListener("click", openModal);
-    $("closeModal").addEventListener("click", closeModal);
-
-    $("taskModal").addEventListener("click", event => {
-      if (event.target === $("taskModal")) closeModal();
+  try {
+    const { error } = await supabaseClient.rpc("create_director_task", {
+      p_title: title,
+      p_description: description || null,
+      p_department: department,
+      p_priority: priority,
+      p_assigned_to: assignedTo,
+      p_start_date: startDate,
+      p_due_date: dueDate
     });
 
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeModal();
-    });
+    if (error) throw error;
 
-    $("searchInput").addEventListener("input", render);
-    $("statusFilter").addEventListener("change", render);
+    await loadTasks();
 
-    $("taskForm").addEventListener("submit", event => {
-      event.preventDefault();
+    $("taskForm").reset();
+    closeModal();
+    alert("تم حفظ المهمة بنجاح في قاعدة البيانات.");
+  } catch (error) {
+    console.error("خطأ حفظ المهمة:", error);
+    alert("تعذر حفظ المهمة: " + (error.message || "خطأ غير معروف"));
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "حفظ المهمة";
+  }
+});
 
-      const title = $("title").value.trim();
-      if (!title) {
-        $("title").focus();
-        return;
-      }
+$("exportBtn").addEventListener("click", () => {
+  const rows = [
+    ["عنوان المهمة", "التفاصيل", "المصلحة", "الموظف المكلف", "تاريخ البداية", "الأجل", "الأولوية", "الحالة"],
+    ...tasks.map(task => [
+      task.title,
+      task.description,
+      task.department,
+      task.employeeName,
+      task.startDate,
+      task.dueDate,
+      priorityLabels[task.priority] || "",
+      labels[task.status] || ""
+    ])
+  ];
 
-      const dueDate = $("dueDate").value;
-      if (dueDate && dueDate < localDateString()) {
-        const confirmed = confirm("الأجل المدخل سابق لتاريخ اليوم. واش بغيتي تكمل؟");
-        if (!confirmed) return;
-      }
+  const csv = "\uFEFF" + rows.map(row =>
+    row.map(value => '"' + String(value ?? "").replace(/"/g, '""') + '"').join(";")
+  ).join("\r\n");
 
-      tasks.unshift({
-        id: Date.now(),
-        title,
-        description: $("description").value.trim(),
-        department: $("department").value.trim(),
-        dueDate,
-        priority: $("priority").value,
-        status: $("status").value,
-        createdAt: new Date().toISOString()
-      });
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
 
-      save();
-      $("taskForm").reset();
-      closeModal();
-    });
+  link.href = url;
+  link.download = "aziar-tasks.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 
-    $("exportBtn").addEventListener("click", () => {
-      const rows = [
-        ["عنوان المهمة", "التفاصيل", "المصلحة", "الأجل", "الأولوية", "الحالة"],
-        ...tasks.map(task => [
-          task.title,
-          task.description,
-          task.department,
-          task.dueDate,
-          priorityLabels[task.priority] || "",
-          labels[task.status] || ""
-        ])
-      ];
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
 
-      const csv = "\uFEFF" + rows.map(row =>
-        row.map(value => '"' + String(value ?? "").replace(/"/g, '""') + '"').join(";")
-      ).join("\r\n");
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.download = "aziar-tasks-demo.csv";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    });
-
-    render();
-  </script>
+render();
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1303,8 +1409,10 @@ body.authenticated > .layout {
 
       document.body.classList.add("authenticated");
 
-      document.getElementById("portalHome").style.display = "none";
-      document.getElementById("authScreen").classList.remove("active");
+document.getElementById("portalHome").style.display = "none";
+document.getElementById("authScreen").classList.remove("active");
+
+await window.activateTaskDashboard(profile);
 
       message.textContent = "";
 
