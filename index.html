@@ -1146,16 +1146,20 @@ $("tasksBody").innerHTML = filtered.map(task => {
       </td>
       <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
       <td><span class="tag ${statusClass}">${escapeHTML(labels[task.status] || "جديدة")}</span></td>
+      
       <td>
-        <div class="task-actions">
-          <button type="button" class="edit-task-btn" data-id="${escapeHTML(task.id)}">
-            ✏️ تعديل
-          </button>
-          <button type="button" class="delete-task-btn" data-id="${escapeHTML(task.id)}">
-            🗑️ حذف
-          </button>
-        </div>
+        ${currentUserProfile?.role === "director" ? `
+          <div class="task-actions">
+            <button type="button" class="edit-task-btn" data-id="${escapeHTML(task.id)}">
+              ✏️ تعديل
+            </button>
+            <button type="button" class="delete-task-btn" data-id="${escapeHTML(task.id)}">
+              🗑️ حذف
+            </button>
+          </div>
+        ` : "—"}
       </td>
+
     </tr>`;
 }).join("");
 
