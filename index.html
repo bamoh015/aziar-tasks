@@ -1226,6 +1226,13 @@ function openModal() {
 
 function closeModal() {
   $("taskModal").classList.remove("open");
+  $("taskForm").reset();
+  delete $("taskForm").dataset.editingTaskId;
+  $("modalTitle").textContent = "إضافة مهمة جديدة";
+
+  const submitButton = $("taskForm").querySelector('button[type="submit"]');
+  submitButton.disabled = false;
+  submitButton.textContent = "حفظ المهمة";
 }
 
 $("openModal").addEventListener("click", openModal);
@@ -1322,21 +1329,7 @@ $("taskForm").addEventListener("submit", async event => {
   }
 });
 
-    if (error) throw error;
-
-    await loadTasks();
-
-    $("taskForm").reset();
-    closeModal();
-    alert("تم حفظ المهمة بنجاح في قاعدة البيانات.");
-  } catch (error) {
-    console.error("خطأ حفظ المهمة:", error);
-    alert("تعذر حفظ المهمة: " + (error.message || "خطأ غير معروف"));
-  } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = "حفظ المهمة";
-  }
-});
+  
 
 $("exportBtn").addEventListener("click", () => {
   const rows = [
