@@ -903,5 +903,18 @@
 
     render();
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+  const SUPABASE_URL = "https://kealonfuxsdpuhfarekx.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_S4Xc9w4FphFdesRWcZR7IQ_6yvFXSGg";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+</script>
+  
 </body>
 </html>
