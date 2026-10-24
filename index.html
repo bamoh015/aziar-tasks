@@ -1637,6 +1637,45 @@ await window.activateTaskDashboard(profile);
       button.textContent = "تسجيل الدخول";
     }
   });
+  
+async function restoreSavedSession() {
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    const session = data.session;
+
+    // ما كايناش جلسة محفوظة: نخليو صفحة الدخول عادية
+    if (!session) return;
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("id, full_name, role, department, is_active")
+      .eq("id", session.user.id)
+      .single();
+
+    if (profileError || !profile || !profile.is_active ||
+        !["director", "employee"].includes(profile.role)) {
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    // إظهار لوحة المهام وإخفاء صفحة الدخول
+    document.body.classList.add("authenticated");
+    document.getElementById("portalHome").style.display = "none";
+    document.getElementById("authScreen").classList.remove("active");
+
+    // استرجاع بيانات المهام حسب صلاحية المستخدم
+    await window.activateTaskDashboard(profile);
+
+  } catch (error) {
+    console.error("تعذر استرجاع جلسة المستخدم:", error);
+  }
+}
+
+restoreSavedSession();
+
 </script>
 </body>
 </html>
