@@ -503,6 +503,224 @@
         scroll-behavior: auto !important;
       }
     }
+    
+/* واجهة استقبال 3D */
+.login-portal {
+  min-height: 100vh;
+  padding: 45px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(115deg, rgba(5,29,23,.97), rgba(11,55,43,.88)),
+    radial-gradient(circle at top right, #39765a, #09251e);
+  color: white;
+}
+
+.portal-content {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.portal-logo {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #d5b36a;
+  border-radius: 24px;
+  color: #f0dba5;
+  font-size: 42px;
+  font-weight: 800;
+  background: linear-gradient(145deg,#255644,#071e18);
+  box-shadow: 0 12px 30px #0006, inset 0 1px 5px #ffffff35;
+}
+
+.portal-title {
+  color: #f0dba5;
+  font-size: clamp(27px,5vw,40px);
+  margin: 0 0 8px;
+}
+
+.portal-subtitle {
+  color: #d0dfd5;
+  margin-bottom: 35px;
+}
+
+.portal-cards {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 25px;
+}
+
+.portal-card {
+  padding: 28px 20px;
+  min-height: 255px;
+  color: white;
+  border-radius: 25px;
+  background: linear-gradient(145deg,#183c30eF,#071c17f5);
+  transition: transform .3s, box-shadow .3s;
+  cursor: pointer;
+}
+
+.portal-card.manager {
+  border: 2px solid #d5b36a;
+  box-shadow: 0 12px 30px #0005, inset 0 1px 10px #d5b36a15;
+}
+
+.portal-card.employee {
+  border: 2px solid #20b99a;
+  box-shadow: 0 12px 30px #0005, inset 0 1px 10px #20b99a15;
+}
+
+.portal-card:hover {
+  transform: translateY(-8px) perspective(800px) rotateX(2deg);
+  box-shadow: 0 22px 45px #0007;
+}
+
+.portal-icon {
+  font-size: 65px;
+  line-height: 1.5;
+  filter: drop-shadow(0 10px 8px #0008);
+}
+
+.portal-card h2 {
+  margin: 8px 0;
+  font-size: 24px;
+}
+
+.portal-card p {
+  color: #d1e0d6;
+  line-height: 1.9;
+}
+
+.portal-button {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 12px 27px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+  color: #10271e;
+  background: linear-gradient(135deg,#f0dba5,#b88940);
+  box-shadow: 0 6px 18px #0004;
+  cursor: pointer;
+}
+
+.employee .portal-button {
+  color: white;
+  background: linear-gradient(135deg,#20b99a,#08765e);
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  background: linear-gradient(135deg,#071f18,#164a38);
+}
+
+.auth-screen.active {
+  display: flex;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  border-radius: 25px;
+  border: 1px solid #d5b36a;
+  background: linear-gradient(145deg,#123b2e,#071b15);
+  color: white;
+  box-shadow: 0 25px 65px #0007, inset 0 1px 8px #ffffff12;
+}
+
+.auth-box.employee-auth {
+  border-color: #20b99a;
+}
+
+.auth-box h2 {
+  text-align: center;
+  color: #f0dba5;
+  margin: 0 0 10px;
+}
+
+.auth-box > p {
+  text-align: center;
+  color: #cbdcd1;
+  margin-bottom: 25px;
+}
+
+.auth-box label {
+  display: block;
+  margin: 15px 0 8px;
+}
+
+.auth-box input {
+  background: #ffffff0c;
+  border: 1px solid #ffffff2b;
+  color: white;
+}
+
+.auth-box input::placeholder {
+  color: #aabeb2;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#f0dba5,#b88940);
+  color: #10271e;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.employee-auth .auth-submit {
+  color: white;
+  background: linear-gradient(135deg,#20b99a,#08765e);
+}
+
+.auth-back {
+  width: 100%;
+  margin-top: 17px;
+  padding: 10px;
+  border: 0;
+  background: transparent;
+  color: #d5b36a;
+  cursor: pointer;
+}
+
+.auth-message {
+  margin-top: 15px;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+@media(max-width:650px) {
+  .portal-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-card {
+    min-height: 220px;
+  }
+
+  .auth-box {
+    padding: 23px;
+  }
+}
+
   </style>
 </head>
 
