@@ -468,7 +468,39 @@
       margin-top: 23px;
       flex-wrap: wrap;
     }
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
 
+.edit-task-btn,
+.delete-task-btn {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.edit-task-btn {
+  color: #164c3c;
+  background: #e1efe5;
+  border-color: #c6dfce;
+}
+
+.delete-task-btn {
+  color: #a13531;
+  background: #ffe8e5;
+  border-color: #f1cbc6;
+}
+
+.task-actions button:hover {
+  filter: brightness(.96);
+}
     @media (max-width: 1000px) {
       .layout { grid-template-columns: 1fr; padding: 20px; }
       .sidebar { position: static; }
