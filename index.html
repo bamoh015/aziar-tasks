@@ -725,6 +725,70 @@
 </head>
 
 <body>
+  
+<section class="login-portal" id="portalHome">
+  <div class="portal-content">
+    <div class="portal-logo">أ</div>
+    <h1 class="portal-title">جماعة أزيار</h1>
+    <p>منصة تتبع المهام الإدارية</p>
+    <h2>مرحباً بكم في فضاء العمل</h2>
+    <p class="portal-subtitle">اختَر الفضاء المناسب للمتابعة</p>
+
+    <div class="portal-cards">
+      <article class="portal-card manager"
+               onclick="openLogin('director')">
+        <div class="portal-icon">🛡️</div>
+        <h2>فضاء المدير</h2>
+        <p>تدبير المهام والموظفين وتتبع الإنجاز</p>
+        <button class="portal-button" type="button">
+          تسجيل الدخول ←
+        </button>
+      </article>
+
+      <article class="portal-card employee"
+               onclick="openLogin('employee')">
+        <div class="portal-icon">👥</div>
+        <h2>فضاء الموظفين</h2>
+        <p>الاطلاع على المهام المسندة وتحديث حالتها</p>
+        <button class="portal-button" type="button">
+          تسجيل الدخول ←
+        </button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="auth-screen" id="authScreen">
+  <div class="auth-box" id="authBox">
+    <div class="portal-logo">أ</div>
+    <h2 id="authTitle">تسجيل الدخول</h2>
+    <p id="authDescription">أدخل معلومات حسابك للمتابعة</p>
+
+    <form id="loginForm">
+      <label for="loginEmail">البريد الإلكتروني</label>
+      <input id="loginEmail" type="email"
+             autocomplete="username" required
+             placeholder="name@example.com">
+
+      <label for="loginPassword">كلمة المرور</label>
+      <input id="loginPassword" type="password"
+             autocomplete="current-password" required
+             placeholder="أدخل كلمة المرور">
+
+      <button class="auth-submit" type="submit">
+        تسجيل الدخول
+      </button>
+      <div id="authMessage" class="auth-message"
+           role="status" aria-live="polite"></div>
+    </form>
+
+    <button class="auth-back" type="button"
+            onclick="backToPortal()">
+      ← العودة إلى الصفحة الرئيسية
+    </button>
+  </div>
+</section>
+
   <div class="ambient one"></div>
   <div class="ambient two"></div>
 
