@@ -504,6 +504,25 @@
       }
     }
     
+/* إخفاء لوحة المهام حتى تسجيل الدخول */
+body:not(.authenticated) > .topbar,
+body:not(.authenticated) > .layout,
+body:not(.authenticated) > footer,
+body:not(.authenticated) > .modal-backdrop {
+  display: none !important;
+}
+
+/* إظهار لوحة المهام بعد المصادقة */
+body.authenticated > .topbar,
+body.authenticated > .layout,
+body.authenticated > footer {
+  display: block;
+}
+
+body.authenticated > .layout {
+  display: grid;
+}
+
 /* واجهة استقبال 3D */
 .login-portal {
   min-height: 100vh;
