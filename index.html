@@ -1122,9 +1122,13 @@ function isLate(task) {
   );
 }
 
+
 function render() {
   const query = $("searchInput").value.trim().toLocaleLowerCase("ar");
   const selectedStatus = $("statusFilter").value;
+  const selectedPriority = $("priorityFilter")?.value || "";
+  const selectedEmployee = $("employeeFilter")?.value || "";
+  const overdueOnly = $("overdueFilter")?.checked || false;
 
   const filtered = tasks.filter(task => {
     const searchable = [
@@ -1134,80 +1138,116 @@ function render() {
       task.employeeName
     ].join(" ").toLocaleLowerCase("ar");
 
-    return searchable.includes(query) &&
-      (!selectedStatus || task.status === selectedStatus);
+    const matchesSearch = searchable.includes(query);
+    const matchesStatus =
+      !selectedStatus || task.status === selectedStatus;
+    const matchesPriority =
+      !selectedPriority || task.priority === selectedPriority;
+
+    const taskEmployeeId =
+      task.assignedTo ?? task.employeeId ?? task.employee_id ?? "";
+
+    const matchesEmployee =
+      !selectedEmployee ||
+      String(taskEmployeeId) === String(selectedEmployee) ||
+      String(task.employeeName || "") === selectedEmployee;
+
+    const matchesOverdue = !overdueOnly || isLate(task);
+
+    return matchesSearch &&
+      matchesStatus &&
+      matchesPriority &&
+      matchesEmployee &&
+      matchesOverdue;
   });
 
+  // الإحصائيات كتظل محسوبة على جميع المهام
   $("totalCount").textContent = tasks.length;
   $("progressCount").textContent =
     tasks.filter(task => task.status === "in_progress").length;
   $("doneCount").textContent =
     tasks.filter(task => task.status === "completed").length;
-  $("lateCount").textContent = tasks.filter(isLate).length;
+  $("lateCount").textContent =
+    tasks.filter(isLate).length;
 
   if (!filtered.length) {
     $("tasksBody").innerHTML = `
       <tr>
         <td class="empty" colspan="6">
           <span class="empty-icon">▤</span>
-          ما كايناش مهام مسجلة حالياً.
+          ما كايناش مهام مطابقة لمعايير البحث والتصفية.
         </td>
       </tr>`;
     return;
   }
 
- 
-$("tasksBody").innerHTML = filtered.map(task => {
-  const statusClass = {
-    new: "tag-new",
-    in_progress: "tag-progress",
-    completed: "tag-done",
-    cancelled: "tag-cancelled"
-  }[task.status] || "tag-new";
+  $("tasksBody").innerHTML = filtered.map(task => {
+    const statusClass = {
+      new: "tag-new",
+      in_progress: "tag-progress",
+      completed: "tag-done",
+      cancelled: "tag-cancelled"
+    }[task.status] || "tag-new";
 
-  return `
-    <tr>
-      <td><span class="task-title">${escapeHTML(task.title)}</span></td>
-      <td>${escapeHTML(task.department || "—")}</td>
-      <td>
-        ${escapeHTML(task.dueDate || "—")}
-        ${isLate(task) ? '<span class="tag tag-late">متأخرة</span>' : ""}
-      </td>
-      <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
+    return `
+      <tr>
+        <td>
+          <span class="task-title">${escapeHTML(task.title)}</span>
+        </td>
 
-<td>
-  ${currentUserProfile?.role === "employee" ? `
-    <select class="task-status-select"
-            data-id="${escapeHTML(task.id)}"
-            aria-label="تغيير حالة المهمة">
-      <option value="new" ${task.status === "new" ? "selected" : ""}>جديدة</option>
-      <option value="in_progress" ${task.status === "in_progress" ? "selected" : ""}>قيد الإنجاز</option>
-      <option value="completed" ${task.status === "completed" ? "selected" : ""}>مكتملة</option>
-    </select>
-  ` : `
-    <span class="tag ${statusClass}">
-      ${escapeHTML(labels[task.status] || "جديدة")}
-    </span>
-  `}
-</td>
-      
-      <td>
-        ${currentUserProfile?.role === "director" ? `
-          <div class="task-actions">
-            <button type="button" class="edit-task-btn" data-id="${escapeHTML(task.id)}">
-              ✏️ تعديل
-            </button>
-            <button type="button" class="delete-task-btn" data-id="${escapeHTML(task.id)}">
-              🗑️ حذف
-            </button>
-          </div>
-        ` : "—"}
-      </td>
+        <td>${escapeHTML(task.department || "—")}</td>
 
-    </tr>`;
-}).join("");
+        <td>
+          ${escapeHTML(task.dueDate || "—")}
+          ${isLate(task)
+            ? '<span class="tag tag-late">متأخرة</span>'
+            : ""}
+        </td>
 
+        <td>
+          ${escapeHTML(priorityLabels[task.priority] || "عادية")}
+        </td>
+
+        <td>
+          ${currentUserProfile?.role === "employee" ? `
+            <select class="task-status-select"
+                    data-id="${escapeHTML(task.id)}"
+                    aria-label="تغيير حالة المهمة">
+              <option value="new"
+                ${task.status === "new" ? "selected" : ""}>جديدة</option>
+              <option value="in_progress"
+                ${task.status === "in_progress" ? "selected" : ""}>قيد الإنجاز</option>
+              <option value="completed"
+                ${task.status === "completed" ? "selected" : ""}>مكتملة</option>
+            </select>
+          ` : `
+            <span class="tag ${statusClass}">
+              ${escapeHTML(labels[task.status] || "جديدة")}
+            </span>
+          `}
+        </td>
+
+        <td>
+          ${currentUserProfile?.role === "director" ? `
+            <div class="task-actions">
+              <button type="button"
+                      class="edit-task-btn"
+                      data-id="${escapeHTML(task.id)}">
+                ✏️ تعديل
+              </button>
+
+              <button type="button"
+                      class="delete-task-btn"
+                      data-id="${escapeHTML(task.id)}">
+                🗑️ حذف
+              </button>
+            </div>
+          ` : "—"}
+        </td>
+      </tr>`;
+  }).join("");
 }
+
 
 async function loadEmployees() {
   const select = $("assignedTo");
