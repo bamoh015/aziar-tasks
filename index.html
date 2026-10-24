@@ -931,61 +931,75 @@ body.authenticated > .layout {
 
   <footer>جماعة أزيار · لوحة تجريبية لتتبع المهام الإدارية</footer>
 
-  <div class="modal-backdrop" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal">
-      <h3 id="modalTitle">إضافة مهمة جديدة</h3>
-      <p class="modal-description">أدخل المعلومات التجريبية للمهمة. لن تتم مشاركتها مع حواسيب أخرى في هذه النسخة.</p>
+ 
+<div class="modal-backdrop" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h3 id="modalTitle">إضافة مهمة جديدة</h3>
+    <p class="modal-description">أدخل معلومات المهمة وحدد الموظف المكلف بها.</p>
 
-      <form id="taskForm">
-        <div class="form-grid">
-          <div class="field full">
-            <label for="title">عنوان المهمة *</label>
-            <input id="title" required maxlength="180" placeholder="مثال: إعداد التقرير الشهري">
-          </div>
+    <form id="taskForm">
+      <div class="form-grid">
 
-          <div class="field full">
-            <label for="description">تفاصيل المهمة</label>
-            <textarea id="description" rows="3" maxlength="2000" placeholder="تفاصيل إضافية حول المهمة..."></textarea>
-          </div>
-
-          <div class="field">
-            <label for="department">المصلحة المعنية</label>
-            <input id="department" maxlength="120" placeholder="اسم المصلحة">
-          </div>
-
-          <div class="field">
-            <label for="dueDate">الأجل النهائي</label>
-            <input id="dueDate" type="date">
-          </div>
-
-          <div class="field">
-            <label for="priority">الأولوية</label>
-            <select id="priority">
-              <option value="normal">عادية</option>
-              <option value="high">مهمة</option>
-              <option value="urgent">مستعجلة</option>
-              <option value="low">منخفضة</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="status">الحالة</label>
-            <select id="status">
-              <option value="new">جديدة</option>
-              <option value="in_progress">قيد الإنجاز</option>
-              <option value="completed">مكتملة</option>
-              <option value="cancelled">ملغاة</option>
-            </select>
-          </div>
+        <div class="field full">
+          <label for="title">عنوان المهمة *</label>
+          <input id="title" required maxlength="180" placeholder="مثال: إعداد التقرير الشهري">
         </div>
 
-        <div class="modal-actions">
-          <button class="button button-primary" type="submit">حفظ المهمة للتجربة</button>
-          <button class="button button-secondary" type="button" id="closeModal">إلغاء</button>
+        <div class="field full">
+          <label for="description">تفاصيل المهمة</label>
+          <textarea id="description" rows="3" maxlength="2000" placeholder="تفاصيل إضافية حول المهمة..."></textarea>
         </div>
-      </form>
-    </div>
+
+        <div class="field full">
+          <label for="assignedTo">الموظف المكلف بالمهمة *</label>
+          <select id="assignedTo" required>
+            <option value="">جاري تحميل الموظفين...</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="department">المصلحة المعنية *</label>
+          <input id="department" required maxlength="120" placeholder="اسم المصلحة">
+        </div>
+
+        <div class="field">
+          <label for="startDate">تاريخ بداية المهمة</label>
+          <input id="startDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="dueDate">الأجل النهائي</label>
+          <input id="dueDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="priority">الأولوية</label>
+          <select id="priority">
+            <option value="normal">عادية</option>
+            <option value="high">مهمة</option>
+            <option value="urgent">مستعجلة</option>
+            <option value="low">منخفضة</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="status">الحالة الأولية</label>
+          <select id="status">
+            <option value="new">جديدة</option>
+            <option value="in_progress">قيد الإنجاز</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button class="button button-primary" type="submit">حفظ المهمة</button>
+        <button class="button button-secondary" type="button" id="closeModal">إلغاء</button>
+      </div>
+    </form>
   </div>
+</div>
+
 
   <script>
     "use strict";
