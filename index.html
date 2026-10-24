@@ -1145,7 +1145,22 @@ $("tasksBody").innerHTML = filtered.map(task => {
         ${isLate(task) ? '<span class="tag tag-late">متأخرة</span>' : ""}
       </td>
       <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
-      <td><span class="tag ${statusClass}">${escapeHTML(labels[task.status] || "جديدة")}</span></td>
+
+<td>
+  ${currentUserProfile?.role === "employee" ? `
+    <select class="task-status-select"
+            data-id="${escapeHTML(task.id)}"
+            aria-label="تغيير حالة المهمة">
+      <option value="new" ${task.status === "new" ? "selected" : ""}>جديدة</option>
+      <option value="in_progress" ${task.status === "in_progress" ? "selected" : ""}>قيد الإنجاز</option>
+      <option value="completed" ${task.status === "completed" ? "selected" : ""}>مكتملة</option>
+    </select>
+  ` : `
+    <span class="tag ${statusClass}">
+      ${escapeHTML(labels[task.status] || "جديدة")}
+    </span>
+  `}
+</td>
       
       <td>
         ${currentUserProfile?.role === "director" ? `
@@ -1474,6 +1489,48 @@ $("tasksBody").addEventListener("click", event => {
     editTask(editButton.dataset.id);
   } else if (deleteButton) {
     deleteTask(deleteButton.dataset.id);
+  }
+});
+
+$("tasksBody").addEventListener("change", async event => {
+  const select = event.target.closest(".task-status-select");
+  if (!select) return;
+
+  if (!currentUserProfile || currentUserProfile.role !== "employee") {
+    alert("تغيير الحالة متاح للموظف المكلّف فقط.");
+    await loadTasks();
+    return;
+  }
+
+  const taskId = select.dataset.id;
+  const newStatus = select.value;
+  const task = tasks.find(item => String(item.id) === String(taskId));
+
+  if (!task || task.assignedTo !== currentUserProfile.id) {
+    alert("هاد المهمة ماشي مسندة لحسابك.");
+    await loadTasks();
+    return;
+  }
+
+  select.disabled = true;
+
+  try {
+    const { error } = await supabaseClient.rpc(
+      "update_assigned_task_status",
+      {
+        p_task_id: Number(taskId),
+        p_new_status: newStatus
+      }
+    );
+
+    if (error) throw error;
+
+    await loadTasks();
+    alert("تم تحديث حالة المهمة بنجاح.");
+  } catch (error) {
+    console.error("خطأ تغيير حالة المهمة:", error);
+    alert("تعذر تغيير الحالة: " + (error.message || "خطأ غير معروف"));
+    await loadTasks();
   }
 });
 
