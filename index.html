@@ -1217,5 +1217,95 @@ body.authenticated > .layout {
   );
 </script>
   
+<script>
+  let selectedRole = null;
+
+  function openLogin(role) {
+    selectedRole = role;
+
+    document.getElementById("portalHome").style.display = "none";
+    document.getElementById("authScreen").classList.add("active");
+
+    document.getElementById("authBox").classList.toggle(
+      "employee-auth",
+      role === "employee"
+    );
+
+    document.getElementById("authTitle").textContent =
+      role === "director" ? "تسجيل دخول المدير" : "تسجيل دخول الموظف";
+
+    document.getElementById("authDescription").textContent =
+      role === "director"
+        ? "أدخل حساب المدير للولوج إلى لوحة القيادة"
+        : "أدخل حسابك للاطلاع على المهام المسندة إليك";
+
+    document.getElementById("authMessage").textContent = "";
+  }
+
+  function backToPortal() {
+    document.getElementById("authScreen").classList.remove("active");
+    document.getElementById("portalHome").style.display = "flex";
+    document.getElementById("loginForm").reset();
+    document.getElementById("authMessage").textContent = "";
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const message = document.getElementById("authMessage");
+    const button = this.querySelector('button[type="submit"]');
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    button.disabled = true;
+    button.textContent = "جارٍ التحقق...";
+    message.textContent = "";
+
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      const user = data.user;
+
+      const { data: profile, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("id, full_name, role, department, is_active")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError || !profile || !profile.is_active) {
+        await supabaseClient.auth.signOut();
+        throw new Error("الحساب غير مفعل أو لا يوجد ملف مستخدم مرتبط به.");
+      }
+
+      if (profile.role !== selectedRole) {
+        await supabaseClient.auth.signOut();
+        throw new Error("هاد الحساب ما عندوش صلاحية الدخول للفضاء المختار.");
+      }
+
+      document.body.classList.add("authenticated");
+
+      document.getElementById("portalHome").style.display = "none";
+      document.getElementById("authScreen").classList.remove("active");
+
+      message.textContent = "";
+
+      alert("مرحبا " + (profile.full_name || "بك") + "، تم التحقق من الحساب بنجاح.");
+
+    } catch (error) {
+      message.textContent = error.message || "تعذر تسجيل الدخول. تحقق من المعلومات وحاول مجدداً.";
+    } finally {
+      button.disabled = false;
+      button.textContent = "تسجيل الدخول";
+    }
+  });
+</script>
+</body>
+</html>
+
 </body>
 </html>
