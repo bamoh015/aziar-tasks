@@ -1234,7 +1234,10 @@ async function loadTasks() {
 window.activateTaskDashboard = async function(profile) {
   currentUserProfile = profile;
 
-  $("openModal").style.display =
+   $("openModal").style.display =
+    profile.role === "director" ? "" : "none";
+
+  $("exportBtn").style.display =
     profile.role === "director" ? "" : "none";
 
   try {
