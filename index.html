@@ -863,31 +863,51 @@ body.checking-session .auth-screen {
     </div>
   </header>
 
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="side-heading">القائمة الرئيسية</div>
-      <nav class="sidebar-nav" aria-label="القائمة الرئيسية">
-        <div class="side-item active"><span class="side-icon">▦</span> لوحة القيادة</div>
-        <div class="side-item"><span class="side-icon">☷</span> سجل المهام</div>
-        <div class="side-item"><span class="side-icon">◷</span> تتبع الآجال</div>
-        <div class="side-item"><span class="side-icon">▤</span> التقارير</div>
-      </nav>
-      <div class="side-note">
-        <strong>نظام تتبع المهام</strong><br>
-        تنظيم العمل الإداري وتحسين تتبع الإنجاز داخل الجماعة.
+ 
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-heading">القائمة الرئيسية</div>
+
+    <nav class="sidebar-nav" aria-label="القائمة الرئيسية">
+      <button type="button" class="side-item active" data-section="dashboard">
+        <span class="side-icon">▦</span>
+        لوحة القيادة
+      </button>
+
+      <button type="button" class="side-item" data-section="tasks">
+        <span class="side-icon">☷</span>
+        سجل المهام
+      </button>
+
+      <button type="button" class="side-item" data-section="deadlines">
+        <span class="side-icon">◷</span>
+        تتبع الآجال
+      </button>
+
+      <button type="button" class="side-item" data-section="reports">
+        <span class="side-icon">▤</span>
+        التقارير
+      </button>
+    </nav>
+
+    <div class="side-note">
+      <strong>نظام تتبع المهام</strong><br>
+      تنظيم العمل الإداري وتحسين تتبع الإنجاز داخل الجماعة.
+    </div>
+  </aside>
+
+  <main>
+    <section class="welcome">
+      <div>
+        <h2>لوحة القيادة</h2>
+        <p>نظرة عامة على المهام والآجال وحالة الإنجاز</p>
       </div>
-    </aside>
 
-    <main>
-      <section class="welcome">
-        <div>
-          <h2>لوحة القيادة</h2>
-          <p>نظرة عامة على المهام والآجال وحالة الإنجاز</p>
-        </div>
-        <button class="button button-primary" id="openModal">＋ إضافة مهمة جديدة</button>
-      </section>
-
-     
+      <button class="button button-primary" id="openModal">
+        ＋ إضافة مهمة جديدة
+      </button>
+    </section>
+  
 
       <section class="stats" aria-label="إحصائيات المهام">
         <article class="glass-card stat">
