@@ -1144,8 +1144,7 @@ function render() {
     const matchesPriority =
       !selectedPriority || task.priority === selectedPriority;
 
-    const taskEmployeeId =
-      task.assignedTo ?? task.employeeId ?? task.employee_id ?? "";
+   const taskEmployeeId = task.assignedTo || "";
 
     const matchesEmployee =
       !selectedEmployee ||
