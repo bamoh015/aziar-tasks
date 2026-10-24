@@ -1249,9 +1249,18 @@ function render() {
 }
 
 
+
 async function loadEmployees() {
   const select = $("assignedTo");
-  select.innerHTML = '<option value="">جاري تحميل الموظفين...</option>';
+  const employeeFilter = $("employeeFilter");
+
+  select.innerHTML =
+    '<option value="">جاري تحميل الموظفين...</option>';
+
+  if (employeeFilter) {
+    employeeFilter.innerHTML =
+      '<option value="">جاري تحميل الموظفين...</option>';
+  }
 
   const { data, error } = await supabaseClient
     .from("profiles")
@@ -1262,14 +1271,29 @@ async function loadEmployees() {
 
   if (error) {
     console.error("خطأ تحميل الموظفين:", error);
-    select.innerHTML = '<option value="">تعذر تحميل الموظفين</option>';
+
+    select.innerHTML =
+      '<option value="">تعذر تحميل الموظفين</option>';
+
+    if (employeeFilter) {
+      employeeFilter.innerHTML =
+        '<option value="">تعذر تحميل الموظفين</option>';
+    }
+
     throw error;
   }
 
   employees = data || [];
 
   if (!employees.length) {
-    select.innerHTML = '<option value="">لا يوجد موظفون مفعّلون</option>';
+    select.innerHTML =
+      '<option value="">لا يوجد موظفون مفعّلون</option>';
+
+    if (employeeFilter) {
+      employeeFilter.innerHTML =
+        '<option value="">جميع الموظفين</option>';
+    }
+
     return;
   }
 
@@ -1280,6 +1304,16 @@ async function loadEmployees() {
         ${escapeHTML(employee.full_name || "موظف بدون اسم")}
       </option>
     `).join("");
+
+  if (employeeFilter) {
+    employeeFilter.innerHTML =
+      '<option value="">جميع الموظفين</option>' +
+      employees.map(employee => `
+        <option value="${escapeHTML(employee.id)}">
+          ${escapeHTML(employee.full_name || "موظف بدون اسم")}
+        </option>
+      `).join("");
+  }
 }
 
 async function loadTasks() {
