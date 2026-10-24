@@ -1371,6 +1371,9 @@ document.addEventListener("keydown", event => {
 
 $("searchInput").addEventListener("input", render);
 $("statusFilter").addEventListener("change", render);
+$("priorityFilter").addEventListener("change", render);
+$("employeeFilter").addEventListener("change", render);
+$("overdueFilter").addEventListener("change", render);
 
 
 $("taskForm").addEventListener("submit", async event => {
