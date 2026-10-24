@@ -1095,26 +1095,38 @@ function render() {
     return;
   }
 
-  $("tasksBody").innerHTML = filtered.map(task => {
-    const statusClass = {
-      new: "tag-new",
-      in_progress: "tag-progress",
-      completed: "tag-done",
-      cancelled: "tag-cancelled"
-    }[task.status] || "tag-new";
+ 
+$("tasksBody").innerHTML = filtered.map(task => {
+  const statusClass = {
+    new: "tag-new",
+    in_progress: "tag-progress",
+    completed: "tag-done",
+    cancelled: "tag-cancelled"
+  }[task.status] || "tag-new";
 
-    return `
-      <tr>
-        <td><span class="task-title">${escapeHTML(task.title)}</span></td>
-        <td>${escapeHTML(task.department || "—")}</td>
-        <td>
-          ${escapeHTML(task.dueDate || "—")}
-          ${isLate(task) ? '<span class="tag tag-late">متأخرة</span>' : ""}
-        </td>
-        <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
-        <td><span class="tag ${statusClass}">${escapeHTML(labels[task.status] || "جديدة")}</span></td>
-      </tr>`;
-  }).join("");
+  return `
+    <tr>
+      <td><span class="task-title">${escapeHTML(task.title)}</span></td>
+      <td>${escapeHTML(task.department || "—")}</td>
+      <td>
+        ${escapeHTML(task.dueDate || "—")}
+        ${isLate(task) ? '<span class="tag tag-late">متأخرة</span>' : ""}
+      </td>
+      <td>${escapeHTML(priorityLabels[task.priority] || "عادية")}</td>
+      <td><span class="tag ${statusClass}">${escapeHTML(labels[task.status] || "جديدة")}</span></td>
+      <td>
+        <div class="task-actions">
+          <button type="button" class="edit-task-btn" data-id="${escapeHTML(task.id)}">
+            ✏️ تعديل
+          </button>
+          <button type="button" class="delete-task-btn" data-id="${escapeHTML(task.id)}">
+            🗑️ حذف
+          </button>
+        </div>
+      </td>
+    </tr>`;
+}).join("");
+
 }
 
 async function loadEmployees() {
