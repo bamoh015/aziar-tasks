@@ -1385,7 +1385,8 @@ async function editTask(taskId) {
   $("priority").value = task.priority || "normal";
 
   $("taskModal").classList.add("open");
-
+$("modalTitle").textContent = "تعديل المهمة";
+  
   const form = $("taskForm");
   form.dataset.editingTaskId = task.id;
 
