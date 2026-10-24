@@ -556,6 +556,11 @@ body.authenticated > .layout {
 }
 
 /* واجهة استقبال 3D */
+    /* إخفاء واجهة الدخول مؤقتاً حتى نتحققو من الجلسة */
+body.checking-session .login-portal,
+body.checking-session .auth-screen {
+  display: none !important;
+}
 .login-portal {
   min-height: 100vh;
   padding: 45px 20px;
