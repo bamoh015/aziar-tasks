@@ -1337,8 +1337,82 @@ $("exportBtn").addEventListener("click", () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
+
+async function editTask(taskId) {
+  if (!currentUserProfile || currentUserProfile.role !== "director") {
+    alert("تعديل المهام متاح للمدير فقط.");
+    return;
+  }
+
+  const task = tasks.find(item => String(item.id) === String(taskId));
+  if (!task) {
+    alert("المهمة غير موجودة.");
+    return;
+  }
+
+  $("title").value = task.title || "";
+  $("description").value = task.description || "";
+  $("department").value = task.department || "";
+  $("assignedTo").value = task.assignedTo || "";
+  $("startDate").value = task.startDate || "";
+  $("dueDate").value = task.dueDate || "";
+  $("priority").value = task.priority || "normal";
+
+  $("taskModal").classList.add("open");
+
+  const form = $("taskForm");
+  form.dataset.editingTaskId = task.id;
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  submitButton.textContent = "حفظ التعديلات";
+
+  $("title").focus();
+}
+
+async function deleteTask(taskId) {
+  if (!currentUserProfile || currentUserProfile.role !== "director") {
+    alert("حذف المهام متاح للمدير فقط.");
+    return;
+  }
+
+  const task = tasks.find(item => String(item.id) === String(taskId));
+  if (!task) {
+    alert("المهمة غير موجودة.");
+    return;
+  }
+
+  if (!confirm("واش متأكد بغيتي تحذف المهمة: " + task.title + "؟")) {
+    return;
+  }
+
+  try {
+    const { error } = await supabaseClient.rpc("delete_director_task", {
+      p_task_id: task.id
+    });
+
+    if (error) throw error;
+
+    await loadTasks();
+    alert("تم حذف المهمة بنجاح.");
+  } catch (error) {
+    console.error("خطأ حذف المهمة:", error);
+    alert("تعذر حذف المهمة: " + (error.message || "خطأ غير معروف"));
+  }
+}
+
+$("tasksBody").addEventListener("click", event => {
+  const editButton = event.target.closest(".edit-task-btn");
+  const deleteButton = event.target.closest(".delete-task-btn");
+
+  if (editButton) {
+    editTask(editButton.dataset.id);
+  } else if (deleteButton) {
+    deleteTask(deleteButton.dataset.id);
+  }
+});
+
 render();
-</script>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
