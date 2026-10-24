@@ -936,16 +936,41 @@ body.checking-session .auth-screen {
           <button class="button button-secondary" id="exportBtn">⇩ تصدير CSV</button>
         </div>
 
-        <div class="filters">
-          <input id="searchInput" type="search" placeholder="⌕ البحث عن عنوان المهمة أو المصلحة...">
-          <select id="statusFilter" aria-label="تصفية حسب الحالة">
-            <option value="">جميع الحالات</option>
-            <option value="new">جديدة</option>
-            <option value="in_progress">قيد الإنجاز</option>
-            <option value="completed">مكتملة</option>
-            <option value="cancelled">ملغاة</option>
-          </select>
-        </div>
+       
+<div class="filters">
+  <input
+    id="searchInput"
+    type="search"
+    placeholder="⌕ البحث عن المهمة أو الموظف أو المصلحة..."
+    aria-label="البحث في المهام"
+  >
+
+  <select id="statusFilter" aria-label="تصفية حسب الحالة">
+    <option value="">جميع الحالات</option>
+    <option value="new">جديدة</option>
+    <option value="in_progress">قيد الإنجاز</option>
+    <option value="completed">مكتملة</option>
+    <option value="cancelled">ملغاة</option>
+  </select>
+
+  <select id="priorityFilter" aria-label="تصفية حسب الأولوية">
+    <option value="">جميع الأولويات</option>
+    <option value="low">منخفضة</option>
+    <option value="normal">عادية</option>
+    <option value="high">مهمة</option>
+    <option value="urgent">مستعجلة</option>
+  </select>
+
+  <select id="employeeFilter" aria-label="تصفية حسب الموظف">
+    <option value="">جميع الموظفين</option>
+  </select>
+
+  <label class="overdue-filter">
+    <input id="overdueFilter" type="checkbox">
+    المهام المتأخرة فقط
+  </label>
+</div>
+
 
       
 <div class="table-wrap">
