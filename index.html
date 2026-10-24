@@ -1242,11 +1242,12 @@ document.addEventListener("keydown", event => {
 $("searchInput").addEventListener("input", render);
 $("statusFilter").addEventListener("change", render);
 
+
 $("taskForm").addEventListener("submit", async event => {
   event.preventDefault();
 
   if (!currentUserProfile || currentUserProfile.role !== "director") {
-    alert("إضافة المهام متاحة للمدير فقط.");
+    alert("تدبير المهام متاح للمدير فقط.");
     return;
   }
 
@@ -1257,6 +1258,7 @@ $("taskForm").addEventListener("submit", async event => {
   const dueDate = $("dueDate").value || null;
   const priority = $("priority").value;
   const description = $("description").value.trim();
+  const editingTaskId = $("taskForm").dataset.editingTaskId;
 
   if (!title || !department || !assignedTo) {
     alert("عافاك عمر عنوان المهمة والمصلحة واختار الموظف.");
@@ -1268,26 +1270,57 @@ $("taskForm").addEventListener("submit", async event => {
     return;
   }
 
-  if (dueDate && dueDate < today) {
-    if (!confirm("الأجل المدخل سابق لتاريخ اليوم. واش بغيتي تكمل؟")) {
-      return;
-    }
-  }
-
   const submitButton = $("taskForm").querySelector('button[type="submit"]');
   submitButton.disabled = true;
   submitButton.textContent = "جاري الحفظ...";
 
   try {
-    const { error } = await supabaseClient.rpc("create_director_task", {
-      p_title: title,
-      p_description: description || null,
-      p_department: department,
-      p_priority: priority,
-      p_assigned_to: assignedTo,
-      p_start_date: startDate,
-      p_due_date: dueDate
-    });
+    let error;
+
+    if (editingTaskId) {
+      ({ error } = await supabaseClient.rpc("update_director_task", {
+        p_task_id: Number(editingTaskId),
+        p_title: title,
+        p_description: description || null,
+        p_department: department,
+        p_priority: priority,
+        p_assigned_to: assignedTo,
+        p_start_date: startDate,
+        p_due_date: dueDate,
+        p_status: tasks.find(task => String(task.id) === String(editingTaskId))?.status || "new"
+      }));
+    } else {
+      ({ error } = await supabaseClient.rpc("create_director_task", {
+        p_title: title,
+        p_description: description || null,
+        p_department: department,
+        p_priority: priority,
+        p_assigned_to: assignedTo,
+        p_start_date: startDate,
+        p_due_date: dueDate
+      }));
+    }
+
+    if (error) throw error;
+
+    delete $("taskForm").dataset.editingTaskId;
+    $("taskForm").reset();
+    closeModal();
+
+    await loadTasks();
+
+    alert(editingTaskId
+      ? "تم تحديث المهمة بنجاح."
+      : "تم حفظ المهمة بنجاح في قاعدة البيانات.");
+
+  } catch (error) {
+    console.error("خطأ حفظ المهمة:", error);
+    alert("تعذر حفظ المهمة: " + (error.message || "خطأ غير معروف"));
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "حفظ المهمة";
+  }
+});
 
     if (error) throw error;
 
