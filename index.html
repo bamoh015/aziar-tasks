@@ -156,23 +156,39 @@
     }
 
     .side-item {
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: 12px;
-      margin-bottom: 6px;
-      color: #456155;
-      font-size: 14px;
-    }
+  width: 100%;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  color: #456155;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: right;
+  cursor: pointer;
+  transition: background .2s, color .2s, box-shadow .2s;
+}
 
-    .side-item.active {
-      color: white;
-      background: linear-gradient(120deg, var(--green), #235c48);
-      box-shadow: 0 7px 16px rgba(18,61,50,.18);
-    }
+.side-item:hover {
+  background: rgba(255,255,255,.72);
+}
 
-    .side-icon { width: 23px; text-align: center; font-size: 18px; }
+.side-item.active {
+  color: white;
+  background: linear-gradient(120deg, var(--green), #235c48);
+  box-shadow: 0 7px 16px rgba(18,61,50,.18);
+}
+
+.side-icon {
+  width: 23px;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 18px;
+}
 
     .side-note {
       border-top: 1px solid rgba(33,72,52,.1);
