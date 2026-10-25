@@ -835,6 +835,110 @@ body.checking-session .auth-screen {
   }
 }
 
+/* ===== نوافذ منبثقة بتصميم أخضر وذهبي 3D ===== */
+
+.modal-backdrop {
+  background: rgba(5, 24, 19, 0.76);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  perspective: 1200px;
+}
+
+.modal {
+  position: relative;
+  border: 1px solid rgba(201, 164, 92, 0.75);
+  border-radius: 22px;
+  background: linear-gradient(
+    145deg,
+    #ffffff 0%,
+    #f4f8f3 55%,
+    #e7efe7 100%
+  );
+  box-shadow:
+    0 30px 65px rgba(0, 0, 0, 0.35),
+    0 12px 25px rgba(18, 61, 50, 0.18),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -3px 0 rgba(18, 61, 50, 0.06);
+  transform-origin: center;
+  animation: modal3DIn 0.32s cubic-bezier(.2, .8, .2, 1);
+}
+
+.modal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 22px;
+  left: 22px;
+  height: 3px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #c9a45c,
+    #ead8a6,
+    #c9a45c,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.modal h3 {
+  color: #123d32;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+.modal-description {
+  color: #62766a;
+}
+
+.field label {
+  color: #164c3c;
+}
+
+.modal-actions button,
+.modal-actions .button {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.modal-actions button:hover,
+.modal-actions .button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(18, 61, 50, 0.16);
+  filter: brightness(1.03);
+}
+
+.modal-actions button:active,
+.modal-actions .button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+@keyframes modal3DIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) rotateX(7deg) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-backdrop {
+    padding: 12px;
+  }
+
+  .modal {
+    max-height: 88vh;
+    border-radius: 18px;
+    padding: 19px;
+  }
+}
+
   </style>
 </head>
 
