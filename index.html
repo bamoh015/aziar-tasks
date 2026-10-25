@@ -1714,8 +1714,10 @@ async function loadTasks() {
       startDate: task.start_date || "",
       priority: task.priority || "normal",
       status: task.status || "new",
-      assignedTo: task.assigned_to,
+            assignedTo: task.assigned_to,
       employeeName: employee?.full_name || "",
+      completionReport: task.completion_report || "",
+      completedAt: task.completed_at || "",
       createdAt: task.created_at
     };
   });
