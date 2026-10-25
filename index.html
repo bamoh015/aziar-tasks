@@ -2079,6 +2079,7 @@ function openTaskDetails(taskId) {
   }
 
   $("taskDetailsTitle").textContent = task.title || "تفاصيل المهمة";
+  $("taskDetailsModal").dataset.taskId = task.id;
 
   $("taskDetailsContent").innerHTML = `
     <p><strong>الوصف:</strong> ${escapeHTML(task.description || "لا يوجد")}</p>
