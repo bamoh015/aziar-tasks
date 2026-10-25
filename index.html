@@ -2284,5 +2284,133 @@ restoreSavedSession();
 
 
 </script>
+  
+<!-- نافذة تأكيد تسجيل الخروج -->
+<div id="logoutModal" class="logout-modal-backdrop" hidden>
+  <div class="logout-modal-box" role="dialog" aria-modal="true"
+       aria-labelledby="logoutModalTitle">
+    <div class="logout-modal-icon">⇥</div>
+    <h2 id="logoutModalTitle">تسجيل الخروج</h2>
+    <p>واش متأكد بغيتي تخرج من فضاء تدبير المهام؟</p>
+    <div class="logout-modal-actions">
+      <button type="button" id="cancelLogoutButton">إلغاء</button>
+      <button type="button" id="confirmLogoutButton">تسجيل الخروج</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.logout-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(3, 20, 15, .78);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  perspective: 1000px;
+}
+
+.logout-modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.logout-modal-box {
+  width: 100%;
+  max-width: 410px;
+  box-sizing: border-box;
+  padding: 30px 24px;
+  text-align: center;
+  color: #fff;
+  border: 1px solid #d5b36a;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #194936, #071d16);
+  box-shadow: 0 28px 65px #0008,
+              inset 0 2px 0 #ffffff16,
+              inset 0 -4px 0 #0003;
+  animation: logout3DIn .3s ease-out;
+}
+
+.logout-modal-icon {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 16px;
+  border: 1px solid #d5b36a;
+  border-radius: 20px;
+  color: #f0dba5;
+  background: linear-gradient(145deg, #285d45, #0a251b);
+  box-shadow: 0 10px 24px #0005, inset 0 1px 4px #ffffff20;
+  font-size: 34px;
+}
+
+.logout-modal-box h2 {
+  margin: 0 0 12px;
+  color: #f0dba5;
+  font-size: 23px;
+}
+
+.logout-modal-box p {
+  margin: 0;
+  color: #d3e1d7;
+  line-height: 1.9;
+}
+
+.logout-modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.logout-modal-actions button {
+  flex: 1;
+  padding: 12px 10px;
+  border-radius: 11px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .2s, filter .2s;
+}
+
+.logout-modal-actions button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+#cancelLogoutButton {
+  color: #fff;
+  border: 1px solid #ffffff40;
+  background: #ffffff12;
+}
+
+#confirmLogoutButton {
+  color: #10271e;
+  border: 1px solid #e8ce8f;
+  background: linear-gradient(135deg, #f0dba5, #b88940);
+  box-shadow: 0 4px 0 #805b29;
+}
+
+@keyframes logout3DIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) rotateX(7deg) scale(.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .logout-modal-box {
+    padding: 25px 18px;
+  }
+}
+</style>
+
 </body>
 </html>
