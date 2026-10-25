@@ -1532,6 +1532,43 @@ $("priorityFilter").addEventListener("change", render);
 $("employeeFilter").addEventListener("change", render);
 $("overdueFilter").addEventListener("change", render);
 
+  // التنقل بين أقسام لوحة الإدارة
+const sectionMap = {
+  dashboard: $("dashboardSection"),
+  tasks: $("tasksSection"),
+  deadlines: $("deadlinesSection"),
+  reports: $("reportsSection")
+};
+
+document.querySelectorAll(".side-item[data-section]").forEach(button => {
+  button.addEventListener("click", () => {
+    const selectedSection = button.dataset.section;
+
+    // إظهار القسم المختار وإخفاء الأقسام الأخرى
+    Object.entries(sectionMap).forEach(([key, section]) => {
+      if (section) {
+        section.hidden = key !== selectedSection;
+      }
+    });
+
+    // تحديث الزر النشط في القائمة الجانبية
+    document.querySelectorAll(".side-item[data-section]").forEach(item => {
+      item.classList.toggle("active", item === button);
+    });
+
+    // تحديث البيانات عند فتح صفحة الآجال أو التقارير
+    if (selectedSection === "deadlines" &&
+        typeof renderDeadlines === "function") {
+      renderDeadlines();
+    }
+
+    if (selectedSection === "reports" &&
+        typeof renderReports === "function") {
+      renderReports();
+    }
+  });
+});
+
 
 $("taskForm").addEventListener("submit", async event => {
   event.preventDefault();
