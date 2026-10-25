@@ -2022,6 +2022,7 @@ $("modalTitle").textContent = "تعديل المهمة";
   $("title").focus();
 }
 
+
 async function deleteTask(taskId) {
   if (!currentUserProfile || currentUserProfile.role !== "director") {
     alert("حذف المهام متاح للمدير فقط.");
@@ -2200,7 +2201,6 @@ await window.activateTaskDashboard(profile);
 
       message.textContent = "";
 
-      alert("مرحبا " + (profile.full_name || "بك") + "، تم التحقق من الحساب بنجاح.");
 
     } catch (error) {
       message.textContent = error.message || "تعذر تسجيل الدخول. تحقق من المعلومات وحاول مجدداً.";
