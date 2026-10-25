@@ -1493,7 +1493,101 @@ window.activateTaskDashboard = async function(profile) {
     console.error("تعذر تهيئة لوحة المهام:", error);
   }
 };
+// عرض المهام المتأخرة والمهام التي اقترب أجلها
+function renderDeadlines() {
+  const body = $("deadlinesBody");
+  if (!body) return;
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+
+  const upcomingTasks = tasks
+    .filter(task => {
+      if (!task.dueDate) return false;
+      if (["completed", "cancelled"].includes(task.status)) return false;
+
+      const dueDate = new Date(task.dueDate + "T00:00:00");
+      return !Number.isNaN(dueDate.getTime()) && dueDate <= nextWeek;
+    })
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+
+  if (!upcomingTasks.length) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="4">لا توجد مهام متأخرة أو قريبة الأجل.</td>
+      </tr>`;
+    return;
+  }
+
+  body.innerHTML = upcomingTasks.map(task => {
+    const dueDate = new Date(task.dueDate + "T00:00:00");
+    const isOverdue = dueDate < today;
+
+    return `
+      <tr>
+        <td>${escapeHTML(task.title || "—")}</td>
+        <td>${escapeHTML(task.employeeName || "غير محدد")}</td>
+        <td>${escapeHTML(task.dueDate)}</td>
+        <td>${isOverdue ? "متأخرة" : "لم يحن أجلها بعد"}</td>
+      </tr>`;
+  }).join("");
+}
+
+
+// عرض التقارير حسب الحالة والأولوية والموظف
+function renderReports() {
+  const countBy = (key, labelMap = {}) => {
+    const counts = {};
+
+    tasks.forEach(task => {
+      const value = task[key] || "غير محدد";
+      counts[value] = (counts[value] || 0) + 1;
+    });
+
+    const entries = Object.entries(counts);
+
+    if (!entries.length) return "<p>لا توجد بيانات حالياً.</p>";
+
+    return entries.map(([value, count]) => `
+      <p>${escapeHTML(labelMap[value] || value)}:
+      <strong>${count}</strong></p>
+    `).join("");
+  };
+
+  const statusLabels = {
+    new: "جديدة",
+    in_progress: "قيد الإنجاز",
+    completed: "مكتملة",
+    cancelled: "ملغاة"
+  };
+
+  const priorityMap = {
+    low: "منخفضة",
+    normal: "عادية",
+    medium: "متوسطة",
+    high: "مرتفعة",
+    urgent: "مستعجلة"
+  };
+
+  $("reportStatus").innerHTML = countBy("status", statusLabels);
+  $("reportPriority").innerHTML = countBy("priority", priorityMap);
+
+  const employeeCounts = {};
+
+  tasks.forEach(task => {
+    const name = task.employeeName || "غير محدد";
+    employeeCounts[name] = (employeeCounts[name] || 0) + 1;
+  });
+
+  $("reportEmployees").innerHTML = Object.keys(employeeCounts).length
+    ? Object.entries(employeeCounts).map(([name, count]) => `
+        <p>${escapeHTML(name)}: <strong>${count}</strong></p>
+      `).join("")
+    : "<p>لا توجد بيانات حالياً.</p>";
+}
 function openModal() {
   if (!currentUserProfile || currentUserProfile.role !== "director") {
     alert("إضافة المهام متاحة للمدير فقط.");
