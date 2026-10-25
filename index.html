@@ -2485,6 +2485,31 @@ if (logoutButton && logoutModal && cancelLogoutButton && confirmLogoutButton) {
 }
 </script>
 
+<div id="taskDetailsModal" class="modal" style="display:none;">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="taskDetailsTitle">
+    <button type="button" id="closeTaskDetails" aria-label="إغلاق">✕</button>
+
+    <h2 id="taskDetailsTitle">تفاصيل المهمة</h2>
+
+    <div id="taskDetailsContent"></div>
+
+    <div id="completionReportSection">
+      <label for="completionReportInput">تقرير إنجاز المهمة</label>
+      <textarea
+        id="completionReportInput"
+        rows="6"
+        placeholder="اكتب هنا الأعمال المنجزة والنتائج والملاحظات..."
+      ></textarea>
+
+      <button type="button" id="saveCompletionReport">
+        حفظ التقرير
+      </button>
+
+      <p id="completionReportMessage" role="status"></p>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
