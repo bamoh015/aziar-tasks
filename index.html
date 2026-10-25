@@ -2046,7 +2046,37 @@ async function restoreSavedSession() {
     document.body.classList.remove("checking-session");
   }
 }
+// تسجيل الخروج وإنهاء جلسة المستخدم
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  const logoutButton = document.getElementById("logoutButton");
 
+  if (!confirm("واش متأكد بغيتي تسجل الخروج؟")) {
+    return;
+  }
+
+  logoutButton.disabled = true;
+
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) throw error;
+
+    document.body.classList.remove("authenticated");
+
+    document.getElementById("portalHome").style.display = "flex";
+    document.getElementById("authScreen").classList.remove("active");
+    document.getElementById("loginForm").reset();
+    document.getElementById("authMessage").textContent = "";
+
+    alert("تم تسجيل الخروج بنجاح.");
+
+  } catch (error) {
+    console.error("خطأ تسجيل الخروج:", error);
+    alert("تعذر تسجيل الخروج. حاول مرة أخرى.");
+  } finally {
+    logoutButton.disabled = false;
+  }
+});
 restoreSavedSession();
 
 
