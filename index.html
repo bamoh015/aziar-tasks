@@ -1447,13 +1447,24 @@ function localDateString(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-const today = localDateString();
+function updateDateTime() {
+  const now = new Date();
 
-$("todayLabel").textContent = new Intl.DateTimeFormat("ar-MA", {
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-}).format(new Date());
+  $("todayLabel").textContent =
+    new Intl.DateTimeFormat("ar-MA", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      timeZone: "Africa/Casablanca"
+    }).format(now);
+}
+
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
 let tasks = [];
 let currentUserProfile = null;
