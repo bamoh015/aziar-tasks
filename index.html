@@ -2100,16 +2100,21 @@ async function deleteTask(taskId) {
   }
 }
 
+
 $("tasksBody").addEventListener("click", event => {
+  const detailsButton = event.target.closest(".task-details-btn");
   const editButton = event.target.closest(".edit-task-btn");
   const deleteButton = event.target.closest(".delete-task-btn");
 
-  if (editButton) {
+  if (detailsButton) {
+    openTaskDetails(detailsButton.dataset.id);
+  } else if (editButton) {
     editTask(editButton.dataset.id);
   } else if (deleteButton) {
     deleteTask(deleteButton.dataset.id);
   }
 });
+
 
 $("tasksBody").addEventListener("change", async event => {
   const select = event.target.closest(".task-status-select");
