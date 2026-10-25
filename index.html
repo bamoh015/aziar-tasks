@@ -2150,6 +2150,56 @@ $("tasksBody").addEventListener("click", event => {
   }
 });
 
+$("saveCompletionReport").addEventListener("click", async () => {
+  const taskId = $("taskDetailsModal").dataset.taskId;
+  const report = $("completionReportInput").value.trim();
+  const message = $("completionReportMessage");
+  const button = $("saveCompletionReport");
+
+  if (!currentUserProfile || currentUserProfile.role !== "employee") {
+    message.textContent = "حفظ التقرير متاح للموظف المكلف فقط.";
+    return;
+  }
+
+  if (!taskId) {
+    message.textContent = "تعذر تحديد المهمة.";
+    return;
+  }
+
+  if (!report) {
+    message.textContent = "المرجو كتابة تقرير الإنجاز أولا.";
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "جاري حفظ التقرير...";
+
+  try {
+    const { error } = await supabaseClient.rpc(
+      "save_assigned_task_report",
+      {
+        p_task_id: Number(taskId),
+        p_report: report
+      }
+    );
+
+    if (error) throw error;
+
+    const task = tasks.find(
+      item => String(item.id) === String(taskId)
+    );
+
+    if (task) task.completionReport = report;
+
+    message.textContent = "تم حفظ تقرير الإنجاز بنجاح.";
+  } catch (error) {
+    console.error("Save completion report error:", error);
+    message.textContent = "تعذر حفظ التقرير. حاول مرة أخرى.";
+  } finally {
+    button.disabled = false;
+  }
+});
+
 
 $("tasksBody").addEventListener("change", async event => {
   const select = event.target.closest(".task-status-select");
