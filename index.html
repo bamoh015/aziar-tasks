@@ -1006,8 +1006,8 @@ body.checking-session .auth-screen {
       </section>
   </div>
 
-      <section class="glass-card panel">
-        <div class="panel-head">
+<section class="glass-card panel content-section" id="tasksSection" hidden>
+  <div class="panel-head">
           <div>
             <h3 class="panel-title">سجل المهام الإدارية</h3>
             <div class="panel-subtitle">بحث وتصنيف المهام المسجلة في هذا المتصفح</div>
@@ -1069,6 +1069,51 @@ body.checking-session .auth-screen {
 </div>
 
       </section>
+    <!-- صفحة تتبع الآجال -->
+<section id="deadlinesSection" class="glass-card panel content-section" hidden>
+  <h2 class="section-heading">تتبع الآجال</h2>
+  <p>تتبع المهام المتأخرة والمهام التي اقترب موعد إنجازها.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>المهمة</th>
+          <th>الموظف المكلف</th>
+          <th>تاريخ الاستحقاق</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody id="deadlinesBody">
+        <tr>
+          <td colspan="4">سيتم عرض المهام هنا.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- صفحة التقارير -->
+<section id="reportsSection" class="content-section" hidden>
+  <h2 class="section-heading">التقارير والإحصائيات</h2>
+
+  <div class="report-grid">
+    <div class="report-card">
+      <h4>توزيع المهام حسب الحالة</h4>
+      <div id="reportStatus">سيتم عرض الإحصائيات هنا.</div>
+    </div>
+
+    <div class="report-card">
+      <h4>توزيع المهام حسب الأولوية</h4>
+      <div id="reportPriority">سيتم عرض الإحصائيات هنا.</div>
+    </div>
+
+    <div class="report-card">
+      <h4>المهام حسب الموظف</h4>
+      <div id="reportEmployees">سيتم عرض الإحصائيات هنا.</div>
+    </div>
+  </div>
+</section>
     </main>
   </div>
 
