@@ -2201,6 +2201,10 @@ $("saveCompletionReport").addEventListener("click", async () => {
   }
 });
 
+$("closeTaskDetails").addEventListener("click", () => {
+  $("taskDetailsModal").style.display = "none";
+});
+
 
 $("tasksBody").addEventListener("change", async event => {
   const select = event.target.closest(".task-status-select");
