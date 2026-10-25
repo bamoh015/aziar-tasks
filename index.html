@@ -1566,8 +1566,11 @@ function render() {
     return `
       <tr>
         <td>
-          <span class="task-title">${escapeHTML(task.title)}</span>
-        </td>
+<button type="button"
+        class="task-title task-details-btn"
+        data-id="${escapeHTML(task.id)}">
+  ${escapeHTML(task.title)}
+</button>        </td>
 
         <td>${escapeHTML(task.department || "—")}</td>
 
