@@ -2190,69 +2190,83 @@ async function deleteTask(taskId) {
 }
 
 
-$("tasksBody").addEventListener("click", event => {
-  const detailsButton = event.target.closest(".task-details-btn");
-  const editButton = event.target.closest(".edit-task-btn");
-  const deleteButton = event.target.closest(".delete-task-btn");
 
-  if (detailsButton) {
-    openTaskDetails(detailsButton.dataset.id);
-  } else if (editButton) {
-    editTask(editButton.dataset.id);
-  } else if (deleteButton) {
-    deleteTask(deleteButton.dataset.id);
-  }
-});
+function setupTaskDetailsEvents() {
+  const tasksBody = $("tasksBody");
+  const saveButton = $("saveCompletionReport");
+  const modal = $("taskDetailsModal");
 
-$("saveCompletionReport").addEventListener("click", async () => {
-  const taskId = $("taskDetailsModal").dataset.taskId;
-  const report = $("completionReportInput").value.trim();
-  const message = $("completionReportMessage");
-  const button = $("saveCompletionReport");
+  if (tasksBody) {
+    tasksBody.addEventListener("click", event => {
+      const detailsButton = event.target.closest(".task-details-btn");
+      const editButton = event.target.closest(".edit-task-btn");
+      const deleteButton = event.target.closest(".delete-task-btn");
 
-  if (!currentUserProfile || currentUserProfile.role !== "employee") {
-    message.textContent = "حفظ التقرير متاح للموظف المكلف فقط.";
-    return;
-  }
-
-  if (!taskId) {
-    message.textContent = "تعذر تحديد المهمة.";
-    return;
-  }
-
-  if (!report) {
-    message.textContent = "المرجو كتابة تقرير الإنجاز أولا.";
-    return;
-  }
-
-  button.disabled = true;
-  message.textContent = "جاري حفظ التقرير...";
-
-  try {
-    const { error } = await supabaseClient.rpc(
-      "save_assigned_task_report",
-      {
-        p_task_id: Number(taskId),
-        p_report: report
+      if (detailsButton) {
+        openTaskDetails(detailsButton.dataset.id);
+      } else if (editButton) {
+        editTask(editButton.dataset.id);
+      } else if (deleteButton) {
+        deleteTask(deleteButton.dataset.id);
       }
-    );
-
-    if (error) throw error;
-
-    const task = tasks.find(
-      item => String(item.id) === String(taskId)
-    );
-
-    if (task) task.completionReport = report;
-
-    message.textContent = "تم حفظ تقرير الإنجاز بنجاح.";
-  } catch (error) {
-    console.error("Save completion report error:", error);
-    message.textContent = "تعذر حفظ التقرير. حاول مرة أخرى.";
-  } finally {
-    button.disabled = false;
+    });
   }
-});
+
+  if (saveButton && modal) {
+    saveButton.addEventListener("click", async () => {
+      const taskId = modal.dataset.taskId;
+      const report = $("completionReportInput").value.trim();
+      const message = $("completionReportMessage");
+
+      if (!currentUserProfile || currentUserProfile.role !== "employee") {
+        message.textContent = "حفظ التقرير متاح للموظف المكلف فقط.";
+        return;
+      }
+
+      if (!taskId) {
+        message.textContent = "تعذر تحديد المهمة.";
+        return;
+      }
+
+      if (!report) {
+        message.textContent = "المرجو كتابة تقرير الإنجاز أولا.";
+        return;
+      }
+
+      saveButton.disabled = true;
+      message.textContent = "جاري حفظ التقرير...";
+
+      try {
+        const { error } = await supabaseClient.rpc(
+          "save_assigned_task_report",
+          {
+            p_task_id: Number(taskId),
+            p_report: report
+          }
+        );
+
+        if (error) throw error;
+
+        const task = tasks.find(item => String(item.id) === String(taskId));
+        if (task) task.completionReport = report;
+
+        message.textContent = "تم حفظ تقرير الإنجاز بنجاح.";
+      } catch (error) {
+        console.error("Save completion report error:", error);
+        message.textContent = "تعذر حفظ التقرير. حاول مرة أخرى.";
+      } finally {
+        saveButton.disabled = false;
+      }
+    });
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", setupTaskDetailsEvents);
+} else {
+  setupTaskDetailsEvents();
+}
+
 
 
 
@@ -2674,6 +2688,59 @@ if (logoutButton && logoutModal && cancelLogoutButton && confirmLogoutButton) {
     </div>
   </div>
 </div>
+
+<script>
+  const saveReportButton = document.getElementById("saveCompletionReport");
+
+  if (saveReportButton) {
+    saveReportButton.addEventListener("click", async () => {
+      const modal = document.getElementById("taskDetailsModal");
+      const taskId = modal.dataset.taskId;
+      const report = document.getElementById("completionReportInput").value.trim();
+      const message = document.getElementById("completionReportMessage");
+
+      if (!currentUserProfile || currentUserProfile.role !== "employee") {
+        message.textContent = "حفظ التقرير متاح للموظف المكلف فقط.";
+        return;
+      }
+
+      if (!taskId) {
+        message.textContent = "تعذر تحديد المهمة.";
+        return;
+      }
+
+      if (!report) {
+        message.textContent = "المرجو كتابة تقرير الإنجاز أولا.";
+        return;
+      }
+
+      saveReportButton.disabled = true;
+      message.textContent = "جاري حفظ التقرير...";
+
+      try {
+        const { error } = await supabaseClient.rpc(
+          "save_assigned_task_report",
+          {
+            p_task_id: Number(taskId),
+            p_report: report
+          }
+        );
+
+        if (error) throw error;
+
+        const task = tasks.find(item => String(item.id) === String(taskId));
+        if (task) task.completionReport = report;
+
+        message.textContent = "تم حفظ تقرير الإنجاز بنجاح.";
+      } catch (error) {
+        console.error("Save completion report error:", error);
+        message.textContent = "تعذر حفظ التقرير. حاول مرة أخرى.";
+      } finally {
+        saveReportButton.disabled = false;
+      }
+    });
+  }
+</script>
 
 </body>
 </html>
