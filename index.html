@@ -2249,77 +2249,8 @@ async function restoreSavedSession() {
     document.body.classList.remove("checking-session");
   }
 }
-// تسجيل الخروج وإنهاء جلسة المستخدم
-
- // تسجيل الخروج باستعمال نافذة 3D
-const logoutButton = document.getElementById("logoutButton");
-const logoutModal = document.getElementById("logoutModal");
-const cancelLogoutButton = document.getElementById("cancelLogoutButton");
-const confirmLogoutButton = document.getElementById("confirmLogoutButton");
-
-function openLogoutModal() {
-  logoutModal.hidden = false;
-  cancelLogoutButton.focus();
-}
-
-function closeLogoutModal() {
-  logoutModal.hidden = true;
-  logoutButton.focus();
-}
-
-logoutButton.addEventListener("click", () => {
-  openLogoutModal();
-});
-
-cancelLogoutButton.addEventListener("click", () => {
-  closeLogoutModal();
-});
-
-logoutModal.addEventListener("click", event => {
-  if (event.target === logoutModal) {
-    closeLogoutModal();
-  }
-});
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && !logoutModal.hidden) {
-    closeLogoutModal();
-  }
-});
-
-confirmLogoutButton.addEventListener("click", async () => {
-  logoutButton.disabled = true;
-  confirmLogoutButton.disabled = true;
-  confirmLogoutButton.textContent = "جاري تسجيل الخروج...";
-
-  try {
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) throw error;
-
-    logoutModal.hidden = true;
-    document.body.classList.remove("authenticated");
-
-    document.getElementById("portalHome").style.display = "flex";
-    document.getElementById("authScreen").classList.remove("active");
-    document.getElementById("loginForm").reset();
-    document.getElementById("authMessage").textContent = "";
-
-    alert("تم تسجيل الخروج بنجاح.");
-
-  } catch (error) {
-    console.error("خطأ تسجيل الخروج:", error);
-    alert("تعذر تسجيل الخروج. حاول مرة أخرى.");
-  } finally {
-    logoutButton.disabled = false;
-    confirmLogoutButton.disabled = false;
-    confirmLogoutButton.textContent = "تسجيل الخروج";
-  }
-});
 
 restoreSavedSession();
-
-
 </script>
   
 <!-- نافذة تأكيد تسجيل الخروج -->
@@ -2447,7 +2378,68 @@ restoreSavedSession();
     padding: 25px 18px;
   }
 }
+
 </style>
+
+<script>
+const logoutButton = document.getElementById("logoutButton");
+const logoutModal = document.getElementById("logoutModal");
+const cancelLogoutButton = document.getElementById("cancelLogoutButton");
+const confirmLogoutButton = document.getElementById("confirmLogoutButton");
+
+if (logoutButton && logoutModal && cancelLogoutButton && confirmLogoutButton) {
+
+  function openLogoutModal() {
+    logoutModal.hidden = false;
+  }
+
+  function closeLogoutModal() {
+    logoutModal.hidden = true;
+  }
+
+  logoutButton.addEventListener("click", openLogoutModal);
+  cancelLogoutButton.addEventListener("click", closeLogoutModal);
+
+  logoutModal.addEventListener("click", function(event) {
+    if (event.target === logoutModal) closeLogoutModal();
+  });
+
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape" && !logoutModal.hidden) {
+      closeLogoutModal();
+    }
+  });
+
+  confirmLogoutButton.addEventListener("click", async function() {
+    logoutButton.disabled = true;
+    confirmLogoutButton.disabled = true;
+    confirmLogoutButton.textContent = "جاري تسجيل الخروج...";
+
+    try {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) throw error;
+
+      logoutModal.hidden = true;
+      document.body.classList.remove("authenticated");
+
+      document.getElementById("portalHome").style.display = "flex";
+      document.getElementById("authScreen").classList.remove("active");
+      document.getElementById("loginForm").reset();
+      document.getElementById("authMessage").textContent = "";
+
+      alert("تم تسجيل الخروج بنجاح.");
+    } catch (error) {
+      console.error("خطأ تسجيل الخروج:", error);
+      alert("تعذر تسجيل الخروج. حاول مرة أخرى.");
+    } finally {
+      logoutButton.disabled = false;
+      confirmLogoutButton.disabled = false;
+      confirmLogoutButton.textContent = "تسجيل الخروج";
+    }
+  });
+}
+</script>
 
 </body>
 </html>
+
