@@ -2068,6 +2068,41 @@ $("modalTitle").textContent = "تعديل المهمة";
   $("title").focus();
 }
 
+function openTaskDetails(taskId) {
+  const task = tasks.find(
+    item => String(item.id) === String(taskId)
+  );
+
+  if (!task) {
+    alert("المهمة غير موجودة.");
+    return;
+  }
+
+  $("taskDetailsTitle").textContent = task.title || "تفاصيل المهمة";
+
+  $("taskDetailsContent").innerHTML = `
+    <p><strong>الوصف:</strong> ${escapeHTML(task.description || "لا يوجد")}</p>
+    <p><strong>المصلحة:</strong> ${escapeHTML(task.department || "غير محددة")}</p>
+    <p><strong>الموظف المكلف:</strong> ${escapeHTML(task.employeeName || "غير محدد")}</p>
+    <p><strong>تاريخ البداية:</strong> ${escapeHTML(task.startDate || "غير محدد")}</p>
+    <p><strong>آخر أجل:</strong> ${escapeHTML(task.dueDate || "غير محدد")}</p>
+    <p><strong>الحالة:</strong> ${escapeHTML(task.status || "غير محددة")}</p>
+  `;
+
+  $("completionReportInput").value = task.completionReport || "";
+  $("completionReportMessage").textContent = "";
+
+  const isEmployee =
+    currentUserProfile &&
+    currentUserProfile.role === "employee";
+
+  $("completionReportInput").readOnly = !isEmployee;
+  $("saveCompletionReport").style.display =
+    isEmployee ? "inline-block" : "none";
+
+  $("taskDetailsModal").style.display = "flex";
+}
+
 
 async function deleteTask(taskId) {
   if (!currentUserProfile || currentUserProfile.role !== "director") {
