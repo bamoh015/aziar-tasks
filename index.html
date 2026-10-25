@@ -517,6 +517,48 @@
 .task-actions button:hover {
   filter: brightness(.96);
 }
+    /* إظهار القسم المختار من القائمة الجانبية */
+.content-section[hidden] {
+  display: none !important;
+}
+
+.section-heading {
+  margin: 0 0 18px;
+  font-size: 24px;
+  color: var(--green);
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.report-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.report-card h4 {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.report-card strong {
+  font-size: 28px;
+  color: var(--green);
+}
+
+@media (max-width: 700px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}
     @media (max-width: 1000px) {
       .layout { grid-template-columns: 1fr; padding: 20px; }
       .sidebar { position: static; }
