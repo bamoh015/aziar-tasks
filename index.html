@@ -2194,6 +2194,7 @@ async function deleteTask(taskId) {
 function setupTaskDetailsEvents() {
   const tasksBody = $("tasksBody");
   const saveButton = $("saveCompletionReport");
+  console.log("زر الحفظ وقت تشغيل الدالة:", !!saveButton);
   const modal = $("taskDetailsModal");
 
   if (tasksBody) {
